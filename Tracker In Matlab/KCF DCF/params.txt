@@ -1,0 +1,12 @@
+%default settings
+params.kernel_type = 'gaussian';
+params.feature_type = 'hog';
+params.show_visualization =1 ;
+params.show_plots =1;
+
+%parameters according to the paper. at this point we can override
+%parameters based on the chosen kernel or feature type	
+
+params.padding = 1.5;  %extra area surrounding the target
+params.lambda = 1e-4;  %regularization
+params.output_sigma_factor = 0.1;  %spatial bandwidth (proportional to target)

@@ -1,0 +1,11 @@
+%parameters according to the paper
+params.padding = 1.0;         			% extra area surrounding the target%超出目标的额外区域
+params.output_sigma_factor = 1/16;		% standard deviation for the desired translation filter output%期望位置滤波器输出的标准差
+params.scale_sigma_factor = 1/4;        % standard deviation for the desired scale filter output%期望尺度滤波器输出的标准差
+params.lambda = 1e-2;					% regularization weight (denoted "lambda" in the paper)%正则化权重（文章中‘lamda’）
+params.learning_rate = 0.025;			% tracking model learning rate (denoted "eta" in the paper)%跟踪模型学习率（文章中“eta”）
+params.number_of_scales = 33;           % number of scale levels (denoted "S" in the paper)%尺度等级数（记为“S”）
+params.scale_step = 1.02;               % Scale increment factor (denoted "a" in the paper)%尺度增量因子（表示“a”）
+params.scale_model_max_area = 512;      % the maximum size of scale examples%最大尺度的样例
+
+params.visualization = 1;
