@@ -1,4 +1,9 @@
 function params = readParams(params_file_name, hp_name, hp_value)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%作者：qw
+%E-mail：1406820937@qq.com
+%子程序功能是依次读取初始参数params文件
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % read params.txt and convert into struct
 	fparams = fopen(params_file_name);
 	C = textscan(fparams, '%s', 'Delimiter', '', 'CommentStyle', '%');

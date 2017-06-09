@@ -1,4 +1,10 @@
 function [params,Image16] = InitCap16(CapFile_Floader)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%作者：qw
+%E-mail：1406820937@qq.com
+%子程序功能是读取初始参数，读取cap16文件，确定初始目标框位置大小
+%（params初始参数表,Image16初始第一幅图像，CapFile_Floader文件cap16存放路径）
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     if nargin<1,CapFile_Floader = 'C:Generated_CAP_File\';end
     [filename,pathname] = uigetfile([CapFile_Floader '*.cap16']);
     type =152;     %cap文件的类型
