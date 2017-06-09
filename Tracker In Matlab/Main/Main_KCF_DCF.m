@@ -4,7 +4,7 @@
 close all;clear all;clc;
 % 添加文件路径
 %path to the videos (you'll be able to choose one with the GUI).
-addpath('../MaltabLibrary_qw','../KCF DCF');%添加上一级目录的文件夹1,2,n
+addpath('../Lib','../KCF DCF');%添加上一级目录的文件夹1,2,n
 sequence = 'D:\ImageData\Coke';%'./data/Benchmark/';
 %
 [params,im] = Load_image(sequence);%读取源文件picture %%% 
