@@ -1,29 +1,20 @@
-clc;close all;clear all;
+close all;clearvars;clc;
+%% 
 addpath('..\Lib\Fhoglib');
-im = imread('suv_1.jpg');
+im = imread('suv_2.jpg');
 im= rgb2gray(im);%转换为灰度图
 im=single(im);
 binSize = 4; nOrients = 9; softBin = -1; useHog=2;clip = 0.2;
-    [M,O]=gradientMex('gradientMag',im,0,1);%
-    H = gradientMex('gradientHist',M,O,binSize,nOrients,softBin,useHog,clip);%
-[M_qw,O_qw]=gradientMag(im,0,1);%new by qw
-H_qw = fhog_features(im,M,O,binSize,nOrients,softBin,useHog,clip);%new by qw
-[w,h,p] = size(H_qw);
-feature = zeros(w*h,p);
-for i=1:w
-    for j=1:h
-        for k=1:p
-            feature(i*j,k) = H_qw(i,j,k);
-        end
-    end
-end
-[pc,score,latent,tsquare] = pca(feature);%我们这里需要他的pc和latent值做分析
-a = cumsum(latent)./sum(latent)
-feature_after_PCA=score(:,1:5);
+[M,O]=gradientMex('gradientMag',im,0,1);%
+H = gradientMex('gradientHist',M,O,binSize,nOrients,softBin,useHog,clip);%
+% [M_qw,O_qw]=gradientMag(im,0,1);%new by qw
+% H_qw = fhog_features(im,M,O,binSize,nOrients,softBin,useHog,clip);%new by qw
+[coef,score,latent,tsquared] = pca(H);
+% feature_after_PCA=score(:,1:5);
 pareto(100*latent);%调用matla画图
 % axis([0 20 0 23]);
 
-% %%
+%%
 % %清屏
 % clear
 % %初始化数据

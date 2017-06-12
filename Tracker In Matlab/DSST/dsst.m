@@ -186,7 +186,7 @@ for frame = 1:num_frames,
     if visualization == 1
         rect_position = [pos([2,1]) - target_sz([2,1])/2, target_sz([2,1])];
         if frame == 1,  %first frame, create GUI
-            figure('Number','off', 'Name',['Tracker - ' video_path]);
+            figure;%('Number','off', 'Name',['Tracker - ' video_path]);
             im_handle = imshow(im);%im_handle = imshow(uint8(im), 'Border','tight', 'InitialMag', 100 + 100 * (length(im) < 500));
             title('DSST');
             rect_handle = rectangle('Position',rect_position, 'EdgeColor','w');

@@ -30,7 +30,7 @@ close all;
 % clear all;
 
 %choose the path to the videos (you'll be able to choose one with the GUI)
-base_path = 'D:\Image Process\对于FHOG各个版本平台代码对比\DSST_code_MATLAB\code - 副本用于修改\sequences';
+base_path = 'D:\ImageData\Dog1';
 
 %parameters according to the paper
 params.padding = 1.0;         			% extra area surrounding the target%超出目标的额外区域
@@ -51,7 +51,7 @@ if isempty(video_path), return, end  %user cancelled
 	load_video_info(video_path);
 
 params.init_pos = floor(pos) + floor(target_sz/2);
-params.wsize = floor(target_sz);
+params.target_sz = floor(target_sz);
 params.img_files = img_files;
 params.video_path = video_path;
 

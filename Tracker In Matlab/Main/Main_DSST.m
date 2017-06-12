@@ -3,7 +3,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 close all;clear all;clc;
 addpath('../Lib','../Lib/Fhogiib','../DSST');%添加上一级目录的文件夹1,2,n
-sequence = 'D:\ImageData\Coke';%设置图片路径
+sequence = 'D:\ImageData\Toy';%设置图片路径
 [params,im] = Load_image(sequence);%读取源文件picture %%% 
 %     [paraams,Image16] = InitCap16(sequence);%读取源文件cap16
 %ask the user for the video

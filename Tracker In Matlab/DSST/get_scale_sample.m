@@ -29,6 +29,7 @@ for s = 1:nScales
     % extract scale features
     temp_hog = fhog(single(im_patch_resized), 4);
     temp = temp_hog(:,:,1:31);
+%     temp = temp_hog(:,:,1);
     
     if s == 1
         out = zeros(numel(temp), nScales, 'single');
