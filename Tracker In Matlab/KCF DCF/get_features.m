@@ -21,7 +21,7 @@ function x = get_features(im, features, cell_size, cos_window)
 	if features.hog,
 		%HOG features, from Piotr's Toolbox
 		x = double(fhog(single(im) / 255, cell_size, features.hog_orientations));
-		x(:,:,end) = [];  %remove all-zeros channel ("truncation feature")
+% 		x(:,:,end) = [];  %remove all-zeros channel ("truncation feature")
 	end
 	
 	if features.gray,

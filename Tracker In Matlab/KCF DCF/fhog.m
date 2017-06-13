@@ -71,6 +71,8 @@ softBin = -1; useHog = 2; b = binSize;
 
 H = gradientMex('gradientHist',M,O,binSize,nOrients,softBin,useHog,clip);
 
+[~,H,~] = pca(H);
+
 if( crop ), e=mod(size(I),b)<b/2; H=H(2:end-e(1),2:end-e(2),:); end
 
 end

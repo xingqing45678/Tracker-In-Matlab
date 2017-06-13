@@ -21,12 +21,13 @@ function update_visualization_func = show_video(img_files, video_path, resize_im
 
 	%create window
 	[fig_h, axes_h, unused, scroll] = videofig(num_frames, @redraw, [], [], @on_key_press);  %#ok, unused outputs
-	set(fig_h, 'Number','off', 'Name', ['Tracker - ' video_path])
+	set(fig_h);%set(fig_h, 'Number','off', 'Name', ['Tracker - ' video_path])
 	axis off;
 	
 	%image and rectangle handles start empty, they are initialized later
 	im_h = [];
 	rect_h = [];
+    tex_handle_h = [];
 	
 	update_visualization_func = @update_visualization;
 	stop_tracker = false;
@@ -58,10 +59,12 @@ function update_visualization_func = show_video(img_files, video_path, resize_im
 		
 		%render target bounding box for this frame
 		if isempty(rect_h),  %create it for the first time
-			rect_h = rectangle('Position',[0,0,1,1], 'EdgeColor','g', 'Parent',axes_h);
+			rect_h = rectangle('Position',[0,0,1,1], 'EdgeColor','w', 'Parent',axes_h);
+            tex_handle_h = text(5, 18, strcat('#',num2str(frame)), 'Color','w', 'FontWeight','bold', 'FontSize',15);
 		end
 		if ~isempty(boxes{frame}),
 			set(rect_h, 'Visible', 'on', 'Position', boxes{frame});
+            set(tex_handle_h, 'string', strcat('#',num2str(frame)))
 		else
 			set(rect_h, 'Visible', 'off');
 		end
