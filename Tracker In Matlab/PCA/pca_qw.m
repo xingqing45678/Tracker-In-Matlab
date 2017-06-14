@@ -1,4 +1,4 @@
-function [U, mu, vars] = pca(X)
+function [U, mu, vars] = pca_qw(X)
 %PCA Principal Component Analysis
 %   Supported syntaxes for tall arrays:
 %

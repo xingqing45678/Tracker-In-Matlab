@@ -60,11 +60,11 @@ function update_visualization_func = show_video(img_files, video_path, resize_im
 		%render target bounding box for this frame
 		if isempty(rect_h),  %create it for the first time
 			rect_h = rectangle('Position',[0,0,1,1], 'EdgeColor','w', 'Parent',axes_h);
-            tex_handle_h = text(5, 18, strcat('#',num2str(frame)), 'Color','w', 'FontWeight','bold', 'FontSize',15);
+            tex_handle_h = text(5, 18, strcat('Ö¡Êý£º',num2str(frame)), 'Color','w', 'FontWeight','bold', 'FontSize',12);
 		end
 		if ~isempty(boxes{frame}),
 			set(rect_h, 'Visible', 'on', 'Position', boxes{frame});
-            set(tex_handle_h, 'string', strcat('#',num2str(frame)))
+            set(tex_handle_h, 'string', strcat('Ö¡Êý£º',num2str(frame)))
 		else
 			set(rect_h, 'Visible', 'off');
 		end

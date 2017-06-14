@@ -5,7 +5,7 @@ close all;clearvars;clc;
 % 添加文件路径
 %path to the videos (you'll be able to choose one with the GUI).
 addpath('../Lib','../KCF DCF');%添加上一级目录的文件夹1,2,n
-sequence = 'D:\ImageData\box';%'./data/Benchmark/';
+sequence = 'D:\ImageData\Suv';%'./data/Benchmark/';
 %
 [params,im] = Load_image(sequence);%读取源文件picture %%% 
 %     [paraams,Image16] = InitCap16(sequence);%读取源文件cap16
@@ -34,7 +34,7 @@ case 'hog'
 otherwise
     error('Unknown feature.')
 end
-assert(any(strcmp(params.kernel_type, {'linear', 'polynomial', 'gaussian'})), 'Unknown kernel.')
+% assert(any(strcmp(params.kernel_type, {'linear', 'polynomial', 'gaussian'})), 'Unknown kernel.')
 %% 
     %call tracker function with all the relevant parameters
     [positions, time] = tracker(params.video_path, params.img_files, params.init_pos, params.target_sz, ...
@@ -43,11 +43,11 @@ assert(any(strcmp(params.kernel_type, {'linear', 'polynomial', 'gaussian'})), 'U
 %% 
 %     %calculate and show precision plot, as well as frames-per-second
 %     precisions = precision_plot(positions, ground_truth, video, show_plots);
-%     fps = numel(img_files) / time;
-% 
-%     fprintf('%12s - Precision (20px):% 1.3f, FPS:% 4.2f\n', video, precisions(20), fps)
-% 
-%     if nargout > 0
-%         %return precisions at a 20 pixels threshold
-%         precision = precisions(20);
-%     end
+    fps = numel(img_files) / time;
+
+    fprintf('%12s - Precision (20px):% 1.3f, FPS:% 4.2f\n', video, precisions(20), fps)
+
+    if nargout > 0
+        %return precisions at a 20 pixels threshold
+        precision = precisions(20);
+    end

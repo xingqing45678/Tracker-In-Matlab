@@ -88,7 +88,7 @@ function [positions, time] = tracker(video_path, img_files, pos, target_sz, ...
 			%obtain a subwindow for detection at the position from last
 			%frame, and convert to Fourier domain (its size is unchanged)
 			patch = get_subwindow(im, pos, window_sz);
-			zf = fft2(get_features(patch, features, cell_size, cos_window));
+			zf = fft2(get_features(patch, features, cell_size, cos_window,frame));
 			
 			%calculate response of the classifier at all shifts
 			switch kernel.type
@@ -117,7 +117,7 @@ function [positions, time] = tracker(video_path, img_files, pos, target_sz, ...
 
 		%obtain a subwindow for training at newly estimated target position
 		patch = get_subwindow(im, pos, window_sz);
-		xf = fft2(get_features(patch, features, cell_size, cos_window));
+		xf = fft2(get_features(patch, features, cell_size, cos_window,frame));
 
 		%Kernel Ridge Regression, calculate alphas (in Fourier domain)
 		switch kernel.type

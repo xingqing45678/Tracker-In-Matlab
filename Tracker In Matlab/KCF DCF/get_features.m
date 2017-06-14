@@ -1,4 +1,4 @@
-function x = get_features(im, features, cell_size, cos_window)
+function x = get_features(im, features, cell_size, cos_window,frame)
 %GET_FEATURES
 %   Extracts dense features from image.
 %
@@ -20,7 +20,7 @@ function x = get_features(im, features, cell_size, cos_window)
 
 	if features.hog,
 		%HOG features, from Piotr's Toolbox
-		x = double(fhog(single(im) / 255, cell_size, features.hog_orientations));
+		x = double(fhog(single(im) / 255, cell_size, features.hog_orientations,frame));
 % 		x(:,:,end) = [];  %remove all-zeros channel ("truncation feature")
 	end
 	

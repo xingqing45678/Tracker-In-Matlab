@@ -1,5 +1,5 @@
 %default settings
-params.kernel_type = 'gaussian';
+params.kernel_type = 'linear';
 params.feature_type = 'hog';
 params.show_visualization =1 ;
 params.show_plots =1;
