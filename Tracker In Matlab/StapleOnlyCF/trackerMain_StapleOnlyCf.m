@@ -203,7 +203,7 @@ function [results] = trackerMain_StapleOnlyCf(p, im, bg_area, area_resize_factor
 %                             set(rectb_handle, 'Position', rect_position_padded)
                             set(tex_handle, 'string', strcat('#',num2str(frame)))
                             hold on
-                            set(pos_handle,'X',pos(2),'Y',pos(1),'MarkerSize',shizi)
+                            set(pos_handle,'XData',pos(2),'YData',pos(1),'MarkerSize',shizi)
 %                             pause(0.001);
                             drawnow;
                         catch  % #ok, user has closed the window

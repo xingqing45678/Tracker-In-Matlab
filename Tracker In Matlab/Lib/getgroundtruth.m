@@ -4,7 +4,7 @@
 %程序功能是读取第一张图片信息，并调用切割函数得到初始目标框位置和大小
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 close all;clear all;clc;
-sequence_path = 'D:\ImageData\suv\';%设置路径名称
+sequence_path = 'F:\WOT\';%设置路径名称
 img_path = [sequence_path 'img\'];
 intrest_frame = 1;%目标帧
 % 读取所有图像帧

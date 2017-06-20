@@ -74,8 +74,8 @@ H_1 = gradientMex('gradientHist',M,O,binSize,nOrients,softBin,useHog,clip);
 %     H_1 = fhog_features_less(I,M,O,binSize,nOrients,softBin,useHog,clip);%new by qw
 
 %%
-H = pcafhog(H_1,16,frame);%size(H_1,3)/2
-% H = H_1;
+% H = pcafhog(H_1,16,frame);%size(H_1,3)/2
+H = H_1;
 if( crop ), e=mod(size(I),b)<b/2; H=H(2:end-e(1),2:end-e(2),:); end
 
 end

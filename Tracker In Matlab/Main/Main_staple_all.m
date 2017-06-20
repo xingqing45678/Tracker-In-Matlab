@@ -6,7 +6,7 @@
 %     addpath(genpath(pwd));%添加当前文件夹及子文件夹
     addpath('../Lib','../StapleAll');%添加上一级目录的文件夹1,2,n
 %     rmpath('./上级目录中的文件夹1');%去除路径是为了修改文件名等操作，否则Matlab会认为你要改的路径正在使用中，是禁止操作的
-    sequence = 'D:\ImageData\Toy';%设置图片路径
+    sequence = 'F:\WOT';%设置图片路径
     [params,im] = Load_image(sequence);%读取源文件picture %%% 
 %     [paraams,Image16] = InitCap16(sequence);%读取源文件cap16
 	if params.visualization%为1时画图，0时不画图
