@@ -72,7 +72,7 @@ function [positions, time] = tracker(video_path, img_files, pos, target_sz, ...
 	time = 0;  %to calculate FPS
 	positions = zeros(numel(img_files), 2);  %to calculate precision
 
-    for frame = 1:numel(img_files),
+    for frame = startframe:numel(img_files),
 		%load image
 		im = imread([video_path img_files{frame}]);
 		if size(im,3) > 1,
@@ -84,7 +84,7 @@ function [positions, time] = tracker(video_path, img_files, pos, target_sz, ...
 
 		tic()
 
-		if frame > 1,
+		if frame > startframe
 			%obtain a subwindow for detection at the position from last
 			%frame, and convert to Fourier domain (its size is unchanged)
 			patch = get_subwindow(im, pos, window_sz);
@@ -130,7 +130,7 @@ function [positions, time] = tracker(video_path, img_files, pos, target_sz, ...
 		end
 		alphaf = yf ./ (kf + lambda);   %equation for fast training
 
-		if frame == 1,  %first frame, train with a single image
+		if frame == startframe  %first frame, train with a single image
 			model_alphaf = alphaf;
 			model_xf = xf;
 		else
@@ -144,7 +144,7 @@ function [positions, time] = tracker(video_path, img_files, pos, target_sz, ...
 		time = time + toc();
 
 		%visualization
-        if show_visualization,  %create video interface
+        if show_visualization %create video interface
             rect_pos = [pos([2,1])-target_sz([2,1])/2,target_sz([2,1])];
             if frame==startframe
                 handle_box = initvideo_qw(startframe,im,frame,rect_pos,pos);

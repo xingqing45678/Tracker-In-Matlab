@@ -1,8 +1,9 @@
-function [results] = trackerMain(p, im, bg_area, fg_area, area_resize_factor)
+function [results] = trackerMain(p, im, bg_area, fg_area, area_resize_factor,startframe)
 %TRACKERMAIN contains the main loop of the tracker, P contains all the parameters set in runTracker
     %% INITIALIZATION
     num_frames = numel(p.img_files);%返回矩阵元素个数或者图像像素数 %p.totalframe;
     % used for OTB-13 benchmark
+    output_path = p.img_path;% 数据保存输出路径
     OTB_rect_positions = zeros(num_frames, 4);
 	pos = p.init_pos;%初始范围框的中心
     target_sz = p.target_sz;
@@ -57,8 +58,8 @@ function [results] = trackerMain(p, im, bg_area, fg_area, area_resize_factor)
     t_imread = 0;
     %% MAIN LOOP
     tic;
-    for frame = 1:num_frames
-        if frame>1
+    for frame = startframe:num_frames
+        if frame>startframe
             tic_imread = tic;
             im = imread([p.img_path p.img_files{frame}]); %%% im = loding_cap(p.fp,p.ImgHeight,p.ImgWidth);
             t_imread = t_imread + toc(tic_imread);
@@ -160,7 +161,7 @@ function [results] = trackerMain(p, im, bg_area, fg_area, area_resize_factor)
 		new_hf_num = bsxfun(@times, conj(yf), xtf) / prod(p.cf_response_size);
 		new_hf_den = (conj(xtf) .* xtf) / prod(p.cf_response_size);
 
-        if frame == 1
+        if frame == startframe
             % first frame, train with a single image
 		    hf_den = new_hf_den;
 		    hf_num = new_hf_num;
@@ -180,7 +181,7 @@ function [results] = trackerMain(p, im, bg_area, fg_area, area_resize_factor)
             xsf = fft(im_patch_scale,[],2);
             new_sf_num = bsxfun(@times, ysf, conj(xsf));
             new_sf_den = sum(xsf .* conj(xsf), 1);
-            if frame == 1,
+            if frame == startframe,
                 sf_den = new_sf_den;
                 sf_num = new_sf_num;
             else
@@ -190,7 +191,7 @@ function [results] = trackerMain(p, im, bg_area, fg_area, area_resize_factor)
         end
 
         % update bbox position
-        if frame==1, rect_position = [pos([2,1]) - target_sz([2,1])/2, target_sz([2,1])]; end
+        if frame==startframe, rect_position = [pos([2,1]) - target_sz([2,1])/2, target_sz([2,1])]; end
 
         rect_position_padded = [pos([2,1]) - bg_area([2,1])/2, bg_area([2,1])];
 
@@ -206,20 +207,24 @@ function [results] = trackerMain(p, im, bg_area, fg_area, area_resize_factor)
                 % Display the annotated video frame using the video player object.
                 step(p.videoPlayer, im);
             else
-                    if frame == 1,  %first frame, create GUI
+                    if frame == startframe,  %first frame, create GUI
                         figure
                         im_handle = imshow(im);
                         title('Staple-All');
-                        rectt_handle = rectangle('Position',rect_position, 'LineWidth',2, 'EdgeColor','g');
+                        rectt_handle = rectangle('Position',rect_position, 'EdgeColor','w');
 %                         rectb_handle = rectangle('Position',rect_position_padded, 'LineWidth',2, 'LineStyle','--', 'EdgeColor','b');
-                        tex_handle = text(5, 18, strcat('#',num2str(frame)), 'Color','y', 'FontWeight','bold', 'FontSize',15);
+                        tex_handle = text(5, 18, strcat('帧数：',num2str(frame)), 'Color','w', 'FontWeight','bold', 'FontSize',15);
+                        hold on;
+                        pos_handle = plot(pos(2),pos(1),'w+','MarkerSize',8);
                         drawnow;
                     else
                         try  %subsequent frames, update GUI
                             set(im_handle, 'CData', im)
                             set(rectt_handle, 'Position', rect_position)
 %                             set(rectb_handle, 'Position', rect_position_padded)
-                            set(tex_handle, 'string', strcat('#',num2str(frame)))
+                            set(tex_handle, 'string', strcat('帧数：',num2str(frame)))
+                            hold on
+                            set(pos_handle,'XData',pos(2),'YData',pos(1),'MarkerSize',8)
 %                             pause(0.001);
                             drawnow;
                         catch  % #ok, user has closed the window
@@ -232,6 +237,8 @@ function [results] = trackerMain(p, im, bg_area, fg_area, area_resize_factor)
 %                 rectangle('Position',rect_position, 'LineWidth',2, 'EdgeColor','g');
 %                 rectangle('Position',rect_position_padded, 'LineWidth',2, 'LineStyle','--', 'EdgeColor','b');
 %                 drawnow
+                    %保存输出图像
+%                 print(1,'-r600','-djpeg',fullfile([output_path '../outimg'],num2str(frame,'%06d')));
             end
         end
     end

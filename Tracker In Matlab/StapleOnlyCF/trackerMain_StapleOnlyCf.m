@@ -1,4 +1,4 @@
-function [results] = trackerMain_StapleOnlyCf(p, im, bg_area, area_resize_factor)
+function [results] = trackerMain_StapleOnlyCf(p, im, bg_area, area_resize_factor,startframe)
 %TRACKERMAIN contains the main loop of the tracker, P contains all the parameters set in runTracker
     %% INITIALIZATION
     num_frames = p.totalframe;%返回矩阵元素个数或者图像像素数
@@ -52,8 +52,8 @@ function [results] = trackerMain_StapleOnlyCf(p, im, bg_area, area_resize_factor
     t_imread = 0;
     %% MAIN LOOP
     tic;
-    for frame = 1:num_frames
-        if frame>1
+    for frame = startframe:num_frames
+        if frame>startframe
             tic_imread = tic;
             im = imread([p.img_path p.img_files{frame}]); %%% im = loding_cap(p.fp,p.ImgHeight,p.ImgWidth);
             t_imread = t_imread + toc(tic_imread);
@@ -142,7 +142,7 @@ function [results] = trackerMain_StapleOnlyCf(p, im, bg_area, area_resize_factor
 		new_hf_num = bsxfun(@times, conj(yf), xtf) / prod(p.cf_response_size);
 		new_hf_den = (conj(xtf) .* xtf) / prod(p.cf_response_size);
 
-        if frame == 1
+        if frame == startframe
             % first frame, train with a single image
 		    hf_den = new_hf_den;
 		    hf_num = new_hf_num;
@@ -158,7 +158,7 @@ function [results] = trackerMain_StapleOnlyCf(p, im, bg_area, area_resize_factor
             xsf = fft(im_patch_scale,[],2);
             new_sf_num = bsxfun(@times, ysf, conj(xsf));
             new_sf_den = sum(xsf .* conj(xsf), 1);
-            if frame == 1,
+            if frame == startframe
                 sf_den = new_sf_den;
                 sf_num = new_sf_num;
             else
@@ -168,7 +168,7 @@ function [results] = trackerMain_StapleOnlyCf(p, im, bg_area, area_resize_factor
         end
 
         % update bbox position
-        if frame==1, rect_position = [pos([2,1]) - target_sz([2,1])/2, target_sz([2,1])]; end
+        if frame==startframe, rect_position = [pos([2,1]) - target_sz([2,1])/2, target_sz([2,1])]; end
 %         rect_position_padded = [pos([2,1]) - bg_area([2,1])/2, bg_area([2,1])];
         OTB_rect_positions(frame,:) = rect_position;
         if p.fout > 0,  fprintf(p.fout,'%.2f,%.2f,%.2f,%.2f\n', rect_position(1),rect_position(2),rect_position(3),rect_position(4));   end
@@ -186,13 +186,13 @@ function [results] = trackerMain_StapleOnlyCf(p, im, bg_area, area_resize_factor
                 else
                     shizi = scale_factor*4;
                 end
-                    if frame == 1,  %first frame, create GUI
+                    if frame == startframe  %first frame, create GUI
                         figure
                         im_handle = imshow(im);%imagesc(uint8(im));
                         title('Staple-Only-CF');
                         rectt_handle = rectangle('Position',rect_position, 'EdgeColor','w');
 %                         rectb_handle = rectangle('Position',rect_position_padded, 'LineWidth',2, 'LineStyle','--', 'EdgeColor','b');
-                        tex_handle = text(5, 18, strcat('#',num2str(frame)), 'Color','w', 'FontWeight','bold', 'FontSize',15);
+                        tex_handle = text(5, 18, strcat('帧数：',num2str(frame)), 'Color','w', 'FontWeight','bold', 'FontSize',15);
                         hold on;
                         pos_handle = plot(pos(2),pos(1),'w+','MarkerSize',shizi);
                         drawnow;
@@ -201,7 +201,7 @@ function [results] = trackerMain_StapleOnlyCf(p, im, bg_area, area_resize_factor
                             set(im_handle, 'CData', im)
                             set(rectt_handle, 'Position', rect_position)
 %                             set(rectb_handle, 'Position', rect_position_padded)
-                            set(tex_handle, 'string', strcat('#',num2str(frame)))
+                            set(tex_handle, 'string', strcat('帧数：',num2str(frame)))
                             hold on
                             set(pos_handle,'XData',pos(2),'YData',pos(1),'MarkerSize',shizi)
 %                             pause(0.001);

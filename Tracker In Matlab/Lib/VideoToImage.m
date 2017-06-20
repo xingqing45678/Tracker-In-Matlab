@@ -4,18 +4,19 @@
 %程序功能是将视频文件提取为图片序列，或者相反将图片序列转为视频
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-close all;clear all;clc;
+close all;clearvars;clc;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% 视频转化为图片
-Video_path = 'F:\WOT\';%设置路径名称
-videoFile = [Video_path 'worldoftanks 2017-06-20 16-01-58-187.avi'];%视频文件名
+Video_path = 'F:\testwot\59huangmo_3\';%设置路径名称
+videoFile = [Video_path 'huangmo3.avi'];%视频文件名
 img_path = [Video_path 'img'];%图片保存路径
 videoData = VideoReader(videoFile);%读取视频文件
-start_frame = 560;%起始帧
-end_frame = 2000;%videoData.NumberOfFrames;%结束帧CurrentTime
-for i = start_frame : end_frame
+start_frame = 1;%起始帧
+end_frame = videoData.NumberOfFrames;%结束帧CurrentTime
+figure
+for i = start_frame : 10 : end_frame
     videoframe = read(videoData,i);
-%     imshow(videoframe);
+    imshow(videoframe);
 %     text(5, 18, strcat('#',num2str(i)), 'Color','y', 'FontWeight','bold', 'FontSize',20);
     imwrite(videoframe,fullfile(img_path,[num2str(i,'%06d') '.jpg']));
     disp(i);
