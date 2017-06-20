@@ -4,13 +4,14 @@
 close all;clearvars;clc;
 % 添加文件路径
 %path to the videos (you'll be able to choose one with the GUI).
-addpath('../Lib','../KCF DCF');%添加上一级目录的文件夹1,2,n
+addpath('../Lib','../KCF DCF','../Lib/Fhoglib');%添加上一级目录的文件夹1,2,n
 sequence = 'D:\ImageData\Suv';%'./data/Benchmark/';
 %
 [params,im] = Load_image(sequence);%读取源文件picture %%% 
 %     [paraams,Image16] = InitCap16(sequence);%读取源文件cap16
 params.video_path = [sequence '/img/'];
 kernel.type = params.kernel_type;
+startframe = 1;
 features.gray = false;
 features.hog = false;
 
@@ -39,7 +40,7 @@ end
     %call tracker function with all the relevant parameters
     [positions, time] = tracker(params.video_path, params.img_files, params.init_pos, params.target_sz, ...
                                 params.padding, kernel, params.lambda, params.output_sigma_factor, params.interp_factor, ...
-                                params.cell_size, features, params.show_visualization);
+                                params.cell_size, features, params.show_visualization,startframe);
 %% 
 %     %calculate and show precision plot, as well as frames-per-second
 %     precisions = precision_plot(positions, ground_truth, video, show_plots);

@@ -68,11 +68,14 @@ if( nargin<6 ), crop=0; end
 softBin = -1; useHog = 2; b = binSize;
 
 [M,O]=gradientMex('gradientMag',I,0,1);
-
 H_1 = gradientMex('gradientHist',M,O,binSize,nOrients,softBin,useHog,clip);
+%% qw
+%     [M,O]=gradientMag(I,0,1);%new by qw
+%     H_1 = fhog_features_less(I,M,O,binSize,nOrients,softBin,useHog,clip);%new by qw
 
-H = pcafhog(H_1,8,frame);%size(H_1,3)/2
-
+%%
+H = pcafhog(H_1,16,frame);%size(H_1,3)/2
+% H = H_1;
 if( crop ), e=mod(size(I),b)<b/2; H=H(2:end-e(1),2:end-e(2),:); end
 
 end

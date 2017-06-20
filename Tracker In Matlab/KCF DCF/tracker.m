@@ -1,6 +1,6 @@
 function [positions, time] = tracker(video_path, img_files, pos, target_sz, ...
 	padding, kernel, lambda, output_sigma_factor, interp_factor, cell_size, ...
-	features, show_visualization)
+	features, show_visualization,startframe)
 %TRACKER Kernelized/Dual Correlation Filter (KCF/DCF) tracking.
 %   This function implements the pipeline for tracking with the KCF (by
 %   choosing a non-linear kernel) and DCF (by choosing a linear kernel).
@@ -62,9 +62,9 @@ function [positions, time] = tracker(video_path, img_files, pos, target_sz, ...
 	cos_window = hann(size(yf,1)) * hann(size(yf,2))';	
 	
 	
-	if show_visualization,  %create video interface
-		update_visualization = show_video(img_files, video_path, resize_image);
-	end
+% 	if show_visualization,  %create video interface
+% 		update_visualization = show_video(img_files, video_path, resize_image);
+% 	end
 	
 	
 	%note: variables ending with 'f' are in the Fourier domain.
@@ -72,7 +72,7 @@ function [positions, time] = tracker(video_path, img_files, pos, target_sz, ...
 	time = 0;  %to calculate FPS
 	positions = zeros(numel(img_files), 2);  %to calculate precision
 
-	for frame = 1:numel(img_files),
+    for frame = 1:numel(img_files),
 		%load image
 		im = imread([video_path img_files{frame}]);
 		if size(im,3) > 1,
@@ -144,16 +144,28 @@ function [positions, time] = tracker(video_path, img_files, pos, target_sz, ...
 		time = time + toc();
 
 		%visualization
-		if show_visualization,
-			box = [pos([2,1]) - target_sz([2,1])/2, target_sz([2,1])];
-			stop = update_visualization(frame, box);
-			if stop, break, end  %user pressed Esc, stop early
-			
-			drawnow
-% 			pause(0.05)  %uncomment to run slower
-		end
-		
-	end
+        if show_visualization,  %create video interface
+            rect_pos = [pos([2,1])-target_sz([2,1])/2,target_sz([2,1])];
+            if frame==startframe
+                handle_box = initvideo_qw(startframe,im,frame,rect_pos,pos);
+            else
+                try
+                    handle_box = showvideo_qw(im,frame,rect_pos,pos,handle_box);
+                catch
+                    warning('非正常结束：用户中途终止');
+                    return
+                end
+            end
+        end
+    end
+% 		if show_visualization,
+% 			box = [pos([2,1]) - target_sz([2,1])/2, target_sz([2,1])];
+% 			stop = update_visualization(frame, box);
+% 			if stop, break, end  %user pressed Esc, stop early
+% 			
+% 			drawnow
+% % 			pause(0.05)  %uncomment to run slower
+% 		end
 
 	if resize_image,
 		positions = positions * 2;
