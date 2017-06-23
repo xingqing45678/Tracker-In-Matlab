@@ -5,19 +5,19 @@
 close all;clearvars;clc;
 % Add paths
 setup_paths();
-startframe = 1;
 
-choose = 'fhog';%   'fhog'--手动设计特征hand-crafted      'cnn'--深度学习特征deep features
-orign_file = 1;%   '1'--源文件为视频     '0'--源文件为图片  
-
+startframe = 1;         %  起始帧
+choose     = 'fhog';    %  'fhog'--普通特征       'cnn'--深度学习特征
+orign_file = 1;         %  '1 '--源文件为视频     '0 '--源文件为图片  
+sub_flag   = 0;         %  '1 '--取分割中心图像   '0 '--不分割图像
 
 %% 读取视频文件
 if orign_file==1
-    video_path = 'F:\testwot\worldoftanks 2017-06-23 12-45-32-856.avi';%视频
-    [seq] = load_video_info_qw(video_path,startframe);%视频
+    video_path = 'F:\testwot\WorldOfTanks 2017-06-21 13-00-30-988.avi';%视频
+    [seq] = load_video_info_qw(video_path,startframe,sub_flag);%视频
 else
 %% 读取图片文件
-    video_path = 'F:\testwot\121B_623_1317';%图片
+    video_path = 'F:\testwot\59huangmo_2';%图片
     [seq] = load_video_info_qw_picture(video_path,startframe);%读图片，用读取groundtruth文件来获取初始定位
 end
 %% Run ECO

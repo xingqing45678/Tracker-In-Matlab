@@ -132,6 +132,7 @@ params.init_pos = [seq.init_rect(1,2), seq.init_rect(1,1)] + (params.init_sz - 1
 params.len = seq.len;
 params.startframe = seq.startframe;
 params.videoData = seq.videoData;
+params.sub_flag = seq.sub_flag;
 
 % Run tracker
 results = tracker(params);

@@ -5,10 +5,11 @@ close all;clearvars;clc;
 % Add paths
 setup_paths();
 startframe = 1;
+sub_flag = 0;%  '1'--取分割中心图像     '0'--不分割图像
 
 % 读取视频文件
 video_path = 'F:\testwot\worldoftanks 2017-06-23 12-45-32-856.avi';%视频
-[seq] = load_video_info_qw(video_path,startframe);%视频
+[seq] = load_video_info_qw(video_path,startframe,sub_flag);%视频
 % Run ECO
 results = testing_ECO_HC(seq);%读取视频
 

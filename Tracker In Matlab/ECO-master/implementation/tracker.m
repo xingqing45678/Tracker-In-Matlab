@@ -8,6 +8,7 @@ startframe = params.startframe;
 max_train_samples = params.nSamples;
 features = params.t_features;
 videoData = params.videoData;
+sub_flag = params.sub_flag;
 
 % Set some default parameters
 params = init_default_params(params);
@@ -37,7 +38,7 @@ init_target_sz = target_sz;
 % im = imread([params.path s_frames{startframe}]);
 im_orign = read(videoData,startframe);
 get_subpos = [videoData.Height/2,videoData.Width/2];
-im = get_subimg(im_orign,get_subpos);
+im = get_subimg(im_orign,get_subpos,sub_flag);
 
 if size(im,3) == 3
     if all(all(im(:,:,1) == im(:,:,2)))
@@ -210,7 +211,7 @@ for frame = startframe:num_frames
 %     im = imread(s_frames{frame});
 %     im = imread([params.path s_frames{frame}]);
     im_orign = read(videoData,frame);
-    im = get_subimg(im_orign,get_subpos);
+    im = get_subimg(im_orign,get_subpos,sub_flag);
     if size(im,3) > 1 && is_color_image == false
         im = im(:,:,1);
     end
