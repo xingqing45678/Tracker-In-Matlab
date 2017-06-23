@@ -7,18 +7,20 @@
 close all;clearvars;clc;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% 视频转化为图片
-Video_path = 'F:\testwot\59huangmo_3\';%设置路径名称
-videoFile = [Video_path 'huangmo3.avi'];%视频文件名
+Video_path = 'F:\testwot\121B_623_1317\';%设置路径名称
+videoFile = [Video_path 'worldoftanks 2017-06-23 12-49-13-324.avi'];%视频文件名
 img_path = [Video_path 'img'];%图片保存路径
 videoData = VideoReader(videoFile);%读取视频文件
 start_frame = 1;%起始帧
 end_frame = videoData.NumberOfFrames;%结束帧CurrentTime
+pos = [videoData.Height/2,videoData.Width/2];
 figure
-for i = start_frame : 10 : end_frame
+for i = start_frame : 1 : end_frame
     videoframe = read(videoData,i);
-    imshow(videoframe);
+    im = get_subimg(videoframe,pos);
+    imshow(im);
 %     text(5, 18, strcat('#',num2str(i)), 'Color','y', 'FontWeight','bold', 'FontSize',20);
-    imwrite(videoframe,fullfile(img_path,[num2str(i,'%06d') '.jpg']));
+    imwrite(im,fullfile(img_path,[num2str(i,'%06d') '.jpg']));
     disp(i);
 end
 disp('视频转换为图片完成');

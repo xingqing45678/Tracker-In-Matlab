@@ -5,7 +5,7 @@ close all;clearvars;clc;
 % 添加文件路径
 %path to the videos (you'll be able to choose one with the GUI).
 addpath('../Lib','../KCF DCF','../Lib/Fhoglib');%添加上一级目录的文件夹1,2,n
-sequence =  'F:\testwot\59huangmo_3';%'./data/Benchmark/';
+sequence =  'F:\testwot\121B_622_2240';%'./data/Benchmark/';
 %
 [params,im] = Load_image(sequence);%读取源文件picture %%% 
 %     [paraams,Image16] = InitCap16(sequence);%读取源文件cap16

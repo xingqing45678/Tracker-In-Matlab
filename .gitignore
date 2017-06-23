@@ -1,0 +1,22 @@
+##Tracker In Matlab/ECO-master/*~
+*.asv
+
+##Tracker In Matlab/ECO-master/external_libs/matconvnet/*.mexw
+##*Tracker In Matlab/ECO-master/external_libs/matconvnet/*.mexa
+##*Tracker In Matlab/ECO-master/
+external_libs/pdollar_toolbox/*.mexw
+##*Tracker In Matlab/ECO-master/
+external_libs/pdollar_toolbox/*.mexa
+##*Tracker In Matlab/ECO-master/
+external_libs/mtimesx/*.mexw
+##*Tracker In Matlab/ECO-master/
+external_libs/mtimesx/*.mexa
+##
+*Tracker In Matlab/ECO-master/feature_extraction/networks
+
+
+##Tracker In Matlab/ECO-master/feature_extraction/networks
+
+
+*feature_extraction/networks
+/
