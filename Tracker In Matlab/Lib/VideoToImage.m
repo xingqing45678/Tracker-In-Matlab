@@ -20,7 +20,7 @@ for i = start_frame : 1 : end_frame
     im = get_subimg(videoframe,pos);
     imshow(im);
 %     text(5, 18, strcat('#',num2str(i)), 'Color','y', 'FontWeight','bold', 'FontSize',20);
-    imwrite(im,fullfile(img_path,[num2str(i,'%06d') '.jpg']));
+%     imwrite(im,fullfile(img_path,[num2str(i,'%06d') '.jpg']));
     disp(i);
 end
 disp('视频转换为图片完成');
