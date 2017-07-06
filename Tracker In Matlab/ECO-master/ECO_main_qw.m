@@ -6,14 +6,14 @@ close all;clearvars;clc;
 % Add paths
 setup_paths();
 
-startframe = 1;         %  起始帧
+startframe = 370;         %  起始帧
 choose     = 'fhog';    %  'fhog'--普通特征       'cnn'--深度学习特征
 orign_file = 1;         %  '1 '--源文件为视频     '0 '--源文件为图片  
-sub_flag   = 0;         %  '1 '--取分割中心图像   '0 '--不分割图像
+sub_flag   = 1;         %  '1 '--取分割中心图像   '0 '--不分割图像
 
 %% 读取视频文件
 if orign_file==1
-    video_path = 'F:\testwot\WorldOfTanks 2017-06-21 13-00-30-988.avi';%视频
+    video_path = 'F:\testwot\worldoftanks 2017-06-23 12-50-07-557.avi';%视频
     [seq] = load_video_info_qw(video_path,startframe,sub_flag);%视频
 else
 %% 读取图片文件

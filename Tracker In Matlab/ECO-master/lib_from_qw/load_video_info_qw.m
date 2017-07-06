@@ -9,7 +9,7 @@ function [seq] = load_video_info_qw(video_path,startframe,sub_flag)
     
     videoframe = read(videoData,startframe);
     if sub_flag==1
-        im = get_subimg(videoframe,pos);%截取720*576中间图像
+        im = get_subimg(videoframe,pos,sub_flag);%截取720*576中间图像
     else
         im = videoframe;
     end

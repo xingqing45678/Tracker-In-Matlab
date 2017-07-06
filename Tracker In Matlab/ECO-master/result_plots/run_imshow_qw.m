@@ -12,7 +12,7 @@ function [fig_handle] = run_imshow_qw(im_to_show,rect_position_vis,frame,fig_han
             imshow(im_to_show);
             hold on;
             rectangle('Position',rect_position_vis, 'EdgeColor','w', 'LineWidth',1);
-            text(10, 15, int2str(frame), 'Color',[0 1 1], 'FontSize',15);
+            text(10, 15, int2str(frame), 'Color','w', 'FontSize',15);
             hold off;
             axis off;axis image;set(gca, 'Units', 'normalized', 'Position', [0 0 1 1])
             
@@ -33,7 +33,7 @@ function [fig_handle] = run_imshow_qw(im_to_show,rect_position_vis,frame,fig_han
 %             resp_handle = imagesc(xs, ys, sampled_scores_display); colormap hsv;
 %             alpha(resp_handle, 0.5);
             rectangle('Position',rect_position_vis, 'EdgeColor','w', 'LineWidth',1);
-            text(10, 15, int2str(frame), 'Color',[0 1 1], 'FontSize',15);
+            text(10, 15, int2str(frame), 'Color','w', 'FontSize',15);
             hold off;
             
 %                 axis off;axis image;set(gca, 'Units', 'normalized', 'Position', [0 0 1 1])
