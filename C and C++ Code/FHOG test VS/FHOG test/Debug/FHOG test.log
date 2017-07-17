@@ -1,34 +1,16 @@
-﻿生成启动时间为 2017/6/6 14:32:09。
-     1>项目“D:\Image Process\对于FHOG各个版本平台代码对比\FHOG test_VS\FHOG test\FHOG test.vcxproj”在节点 2 上(Build 个目标)。
+﻿生成启动时间为 2017/7/18 1:35:13。
+     1>项目“F:\tracker_qw\C and C++ Code\FHOG test VS\FHOG test\FHOG test.vcxproj”在节点 2 上(Build 个目标)。
      1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _LIB /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt test.cpp
-         test.cpp
-     1>d:\image process\对于fhog各个版本平台代码对比\fhog test_vs\fhog test\test.cpp(17): warning C4996: 'ultoa': The POSIX name for this item is deprecated. Instead, use the ISO C++ conformant name: _ultoa. See online help for details.
-                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\stdlib.h(945) : 参见“ultoa”的声明
-     1>d:\image process\对于fhog各个版本平台代码对比\fhog test_vs\fhog test\test.cpp(19): warning C4018: “<”: 有符号/无符号不匹配
-     1>d:\image process\对于fhog各个版本平台代码对比\fhog test_vs\fhog test\test.cpp(21): warning C4996: 'ultoa': The POSIX name for this item is deprecated. Instead, use the ISO C++ conformant name: _ultoa. See online help for details.
-                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\stdlib.h(945) : 参见“ultoa”的声明
-     1>d:\image process\对于fhog各个版本平台代码对比\fhog test_vs\fhog test\test.cpp(23): warning C4018: “<”: 有符号/无符号不匹配
-     1>d:\image process\对于fhog各个版本平台代码对比\fhog test_vs\fhog test\test.cpp(25): warning C4996: 'ultoa': The POSIX name for this item is deprecated. Instead, use the ISO C++ conformant name: _ultoa. See online help for details.
-                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\stdlib.h(945) : 参见“ultoa”的声明
-     1>d:\image process\对于fhog各个版本平台代码对比\fhog test_vs\fhog test\test.cpp(27): warning C4018: “<”: 有符号/无符号不匹配
-     1>d:\image process\对于fhog各个版本平台代码对比\fhog test_vs\fhog test\test.cpp(29): warning C4996: 'ultoa': The POSIX name for this item is deprecated. Instead, use the ISO C++ conformant name: _ultoa. See online help for details.
-                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\stdlib.h(945) : 参见“ultoa”的声明
-     1>d:\image process\对于fhog各个版本平台代码对比\fhog test_vs\fhog test\test.cpp(31): warning C4018: “<”: 有符号/无符号不匹配
-     1>d:\image process\对于fhog各个版本平台代码对比\fhog test_vs\fhog test\test.cpp(41): warning C4996: 'ultoa': The POSIX name for this item is deprecated. Instead, use the ISO C++ conformant name: _ultoa. See online help for details.
-                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\stdlib.h(945) : 参见“ultoa”的声明
-     1>d:\image process\对于fhog各个版本平台代码对比\fhog test_vs\fhog test\test.cpp(43): warning C4018: “<”: 有符号/无符号不匹配
-     1>d:\image process\对于fhog各个版本平台代码对比\fhog test_vs\fhog test\test.cpp(49): warning C4996: 'ultoa': The POSIX name for this item is deprecated. Instead, use the ISO C++ conformant name: _ultoa. See online help for details.
-                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\stdlib.h(945) : 参见“ultoa”的声明
-     1>d:\image process\对于fhog各个版本平台代码对比\fhog test_vs\fhog test\test.cpp(51): warning C4018: “<”: 有符号/无符号不匹配
-     1>d:\image process\对于fhog各个版本平台代码对比\fhog test_vs\fhog test\test.cpp(62): warning C4996: 'ultoa': The POSIX name for this item is deprecated. Instead, use the ISO C++ conformant name: _ultoa. See online help for details.
-                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\stdlib.h(945) : 参见“ultoa”的声明
-     1>d:\image process\对于fhog各个版本平台代码对比\fhog test_vs\fhog test\test.cpp(64): warning C4018: “<”: 有符号/无符号不匹配
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _LIB /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt main.cpp
+         main.cpp
+     1>f:\tracker_qw\c and c++ code\fhog test vs\fhog test\main.cpp(232): warning C4101: “od”: 未引用的局部变量
+     1>f:\tracker_qw\c and c++ code\fhog test vs\fhog test\main.cpp(232): warning C4101: “o1”: 未引用的局部变量
+     1>f:\tracker_qw\c and c++ code\fhog test vs\fhog test\main.cpp(232): warning C4101: “m”: 未引用的局部变量
        Link:
-         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"D:\Image Process\对于FHOG各个版本平台代码对比\FHOG test_VS\Debug\FHOG test.exe" /INCREMENTAL /NOLOGO /LIBPATH:"C:\Program Files\MATLAB\R2014a\extern\lib\win64" /LIBPATH:"C:\Program Files\MATLAB\R2014a\extern\lib\win32" opencv_ml249d.lib opencv_calib3d249d.lib opencv_contrib249d.lib opencv_core249d.lib opencv_features2d249d.lib opencv_flann249d.lib opencv_gpu249d.lib opencv_highgui249d.lib opencv_imgproc249d.lib opencv_legacy249d.lib opencv_objdetect249d.lib opencv_ts249d.lib opencv_video249d.lib opencv_nonfree249d.lib opencv_ocl249d.lib opencv_photo249d.lib opencv_stitching249d.lib opencv_superres249d.lib opencv_videostab249d.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"D:\Image Process\对于FHOG各个版本平台代码对比\FHOG test_VS\Debug\FHOG test.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"D:\Image Process\对于FHOG各个版本平台代码对比\FHOG test_VS\Debug\FHOG test.lib" /MACHINE:X86 Debug\test.obj
-         FHOG test.vcxproj -> D:\Image Process\对于FHOG各个版本平台代码对比\FHOG test_VS\Debug\FHOG test.exe
-     1>已完成生成项目“D:\Image Process\对于FHOG各个版本平台代码对比\FHOG test_VS\FHOG test\FHOG test.vcxproj”(Build 个目标)的操作。
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"F:\tracker_qw\C and C++ Code\FHOG test VS\Debug\FHOG test.exe" /INCREMENTAL /NOLOGO /LIBPATH:"C:\Program Files\MATLAB\R2014a\extern\lib\win64" /LIBPATH:"C:\Program Files\MATLAB\R2014a\extern\lib\win32" opencv_ml249d.lib opencv_calib3d249d.lib opencv_contrib249d.lib opencv_core249d.lib opencv_features2d249d.lib opencv_flann249d.lib opencv_gpu249d.lib opencv_highgui249d.lib opencv_imgproc249d.lib opencv_legacy249d.lib opencv_objdetect249d.lib opencv_ts249d.lib opencv_video249d.lib opencv_nonfree249d.lib opencv_ocl249d.lib opencv_photo249d.lib opencv_stitching249d.lib opencv_superres249d.lib opencv_videostab249d.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"F:\tracker_qw\C and C++ Code\FHOG test VS\Debug\FHOG test.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"F:\tracker_qw\C and C++ Code\FHOG test VS\Debug\FHOG test.lib" /MACHINE:X86 Debug\main.obj
+         FHOG test.vcxproj -> F:\tracker_qw\C and C++ Code\FHOG test VS\Debug\FHOG test.exe
+     1>已完成生成项目“F:\tracker_qw\C and C++ Code\FHOG test VS\FHOG test\FHOG test.vcxproj”(Build 个目标)的操作。
 
 生成成功。
 
-已用时间 00:00:00.67
+已用时间 00:00:01.51

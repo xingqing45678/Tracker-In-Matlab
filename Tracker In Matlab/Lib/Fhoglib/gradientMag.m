@@ -75,6 +75,10 @@ function [M,O] =  gradientMag(I, channel, normRad, normConst, full)
           if m>1e10,m = 1e10;end
           M2(y) = 1/m;%此处M2内容变成了sqrt（Gx2+Gy2）
           Gx(y) = (Gx(y)*m)*acMult;
+          %
+          if Gy(y)<0
+              Gx(y)=Gx(y)*(-1);
+          end
 %         %按位与、按位异或作用未知
 %           Gx(y) = bitxor(Gx(y),bitand(Gy(y),0.0));
        end
@@ -82,7 +86,11 @@ function [M,O] =  gradientMag(I, channel, normRad, normConst, full)
           %计算和存储梯度方向（O）通过查找表
           %计算梯度方向时用到反正切，但是注意要将角度值映射到0~2pi
           for y=1:h
-             O((x-1)*h+y) = acosTable(round(Gx(y))+10011);%原方式查表法
+             try
+                O((x-1)*h+y) = acosTable(round(Gx(y))+n+b);%+10011);%原方式查表法
+             catch
+                 disp('error');
+             end
 %                if Gx(y)==0
 %                    if Gy(y)>=0,pv=pi/2;else pv=pi*3/2;end
 %                else

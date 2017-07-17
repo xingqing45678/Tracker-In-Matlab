@@ -152,9 +152,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="test.cpp" />
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="mat.h" />
   </ItemGroup>
   <ItemGroup>
@@ -162,6 +159,9 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="suv_1.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -54,8 +54,8 @@ int main(int argc, char * argv[])
 	gradientMagnitude(data_zhuan, M, O, h, w, 1, true);
 	int binSize = 4; int nOrients = 9; int softBin = -1; float clip = 0.2f;
 	int hb = h / binSize; int wb = w / binSize; int nChns = nOrients * 3 + 5;
-	hog(M, O, H, h, w, binSize, nOrients, softBin, clip);
-	//fhog(M, O, H, h, w, binSize, nOrients, softBin, clip);
+	//hog(M, O, H, h, w, binSize, nOrients, softBin, clip);
+	fhog(M, O, H, h, w, binSize, nOrients, softBin, clip);
 	int i, j, k;
 	//ofstream fout("H_qw.txt");//默认路径是工程文件下
 	for (i = 0; i < nChns; i++)
