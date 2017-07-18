@@ -4,7 +4,7 @@
 function N = hogNormMatrix(R2, nOrients, hb, wb, binSize)
     hb1=hb+1;wb1=wb+1;ep=1e-4/4/binSize/binSize/binSize/binSize;%precise backward equality精确的反向等式
     N=zeros(1,hb1*wb1);
-    current_N1=hb1;
+    current_N1=hb1+1;
    for o=1: nOrients
        for x=1:wb
            for y=1:hb

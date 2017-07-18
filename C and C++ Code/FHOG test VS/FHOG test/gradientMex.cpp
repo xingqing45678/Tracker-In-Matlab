@@ -3,35 +3,108 @@
 * Copyright 2014 Piotr Dollar & Ron Appel.  [pdollar-at-gmail.com]
 * Licensed under the Simplified BSD License [see external/bsd.txt]
 *******************************************************************************/
+/*******************************************************************************
+* 此文件为使用SEE加速的版本，原始来源为ECO辅助工具集pdollar-toolbox，
+* 本程序中得到的结果H与matlab得到的结果一致。
+* Autor:Tornado
+* 2017-7-18
+*******************************************************************************/
+
+//#include "stdlib.h"
+#include <opencv2/opencv.hpp>  
+#include <malloc.h>
+//#include <stddef.h>
+#include <fstream> //头文件
 #include "wrappers.hpp"
 #include <math.h>
 #include "string.h"
 #include "sse.hpp"
 
+//#include <opencv2/legacy/legacy.hpp>
+//#pragma comment(lib, "opencv_legacy249d.lib")
+
 #define PI 3.14159265f
+#define N_h 12
+#define N_w 16
+#define BINSIZE  4 
+#define NORIENTS  9
+#define SOFTBIN  -1
+
+using namespace cv;
+using namespace std;
+
+void fhog_test(float *Im, float *H1, float(*H2)[N_w / 4][N_h / 4], int h, int w);
+float* acosTable(void);
+void gradMag(float *I, float *M, float *O, int h, int w, int d, bool full);
+void gradMagNorm(float *M, float *S, int h, int w, float norm);
+void gradHist(float *M, float *O, float *H, int h, int w, int bin, int nOrients, int softBin, bool full);
+void hog(float *M, float *O, float *H, int h, int w, int binSize, int nOrients, int softBin, float clip);
+void fhog(float *M, float *O, float *H, int h, int w, int binSize, int nOrients, int softBin, float clip);
+
+float H[(N_h / BINSIZE)*(N_w / BINSIZE) * 32] = { 0 }, M[N_h * N_w] = { 0 }, O[N_h * N_w] = { 0 }, H_out[32][N_w / BINSIZE][N_h / BINSIZE] = { 0 };
+
+int main(int argc, char * argv[])
+{
+
+	Mat src_mat = imread("suv_2.jpg");
+	Mat gray_mat;
+	//int h = src_mat.rows, w = src_mat.cols;
+	int h = N_h, w = N_w;
+	cvtColor(src_mat, gray_mat, CV_BGR2GRAY);
+	float data[N_h][N_w] = { 0 };
+	float data_zhuan[N_h*N_w] = { 0 };
+	unsigned char* idata = (unsigned char*)gray_mat.data;
+	for (int i = 0; i < h; i++)
+		for (int j = 0; j < w; j++)
+		{
+			data[i][j] = (float)idata[i*w + j];
+		}
+	for (int i = 0; i < w; i++)
+		for (int j = 0; j < h; j++)
+		{
+			data_zhuan[i*h + j] = data[j][i];
+		}
+	//imshow("image", img);
+	/****************************************************************************/
+	gradMag(data_zhuan, M, O, h, w, 1, true);
+	int binSize = BINSIZE;
+	int nOrients = NORIENTS;
+	int softBin = SOFTBIN;
+	float clip = 0.2f;
+	int hb = h / binSize; int wb = w / binSize; int nChns = nOrients * 3 + 5;
+	//hog(M, O, H, h, w, binSize, nOrients, softBin, clip);
+	fhog(M, O, H, h, w, binSize, nOrients, softBin, clip);
+	int i, j, k;
+	//ofstream fout("H_qw.txt");//默认路径是工程文件下
+	for (i = 0; i < nChns; i++)
+	{
+		for (j = 0; j < wb; j++)
+		{
+			for (k = 0; k < hb; k++)
+			{
+				H_out[i][j][k] = H[i*hb*wb + j*hb + k];
+				//fout << H2[i][j][k] << endl;
+				//memcpy(H_out[k][j][i], H[i*hb*wb + j*hb + k], sizeof(float));
+			}
+		}
+	}
+	//fout.close();
+	waitKey(0);
+	//system("pause");
+	return 0;
+}
+
+/****************************************************************************/
 
 // compute x and y gradients for just one column (uses sse)
-void grad1( float *I, float *Gx, float *Gy, int h, int w, int x ) 
-{
-  int y, y1; 
-  float *Ip, *In, r;
-  __m128 *_Ip, *_In, *_G, _r;
+void grad1( float *I, float *Gx, float *Gy, int h, int w, int x ) {
+  int y, y1; float *Ip, *In, r; __m128 *_Ip, *_In, *_G, _r;
   // compute column of Gx
-  Ip=I-h;
-  In=I+h;
-  r=.5f;
-  if(x==0) 
-	{
-	  r=1; 
-	  Ip+=h;
-	} 
-  else if(x==w-1) { r=1; In-=h; }
-  if( h<4 || h%4>0 || (size_t(I)&15) || (size_t(Gx)&15) ) 
-  {
+  Ip=I-h; In=I+h; r=.5f;
+  if(x==0) { r=1; Ip+=h; } else if(x==w-1) { r=1; In-=h; }
+  if( h<4 || h%4>0 || (size_t(I)&15) || (size_t(Gx)&15) ) {
     for( y=0; y<h; y++ ) *Gx++=(*In++-*Ip++)*r;
-  } 
-  else
-  {
+  } else {
     _G=(__m128*) Gx; _Ip=(__m128*) Ip; _In=(__m128*) In; _r = SET(r);
     for(y=0; y<h; y+=4) *_G++=MUL(SUB(*_In++,*_Ip++),_r);
   }
@@ -92,7 +165,7 @@ void gradMag( float *I, float *M, float *O, int h, int w, int d, bool full ) {
     }
     // compute gradient mangitude (M) and normalize Gx
     for( y=0; y<h4/4; y++ ) {
-      _m = MIN( RCPSQRT(_M2[y]), SET(1e10f) );
+      _m = QWMIN( RCPSQRT(_M2[y]), SET(1e10f) );////此处修改了函数名，2017-7-18，qw
       _M2[y] = RCP(_m);
       if(O) _Gx[y] = MUL( MUL(_Gx[y],_m), SET(acMult) );
       if(O) _Gx[y] = XOR( _Gx[y], AND(_Gy[y], SET(-0.f)) );
@@ -120,18 +193,18 @@ void gradMagNorm( float *M, float *S, int h, int w, float norm ) {
   if(sse) i*=4; for(; i<n; i++) M[i] /= (S[i] + norm);
 }
 
-// helper for gradHist, quantize O and M into O0, O1 and M0, M1 (uses sse)将O和M量化到O0，O1和M0，M1
+// helper for gradHist, quantize O and M into O0, O1 and M0, M1 (uses sse)
 void gradQuantize( float *O, float *M, int *O0, int *O1, float *M0, float *M1,
   int nb, int n, float norm, int nOrients, bool full, bool interpolate )
 {
-  // assumes all *OUTPUT* matrices are 4-byte aligned假设所有*输出*矩阵是4字节对齐
+  // assumes all *OUTPUT* matrices are 4-byte aligned
   int i, o0, o1; float o, od, m;
   __m128i _o0, _o1, *_O0, *_O1; __m128 _o, _od, _m, *_M0, *_M1;
-  // define useful constants定义有用的常量
+  // define useful constants
   const float oMult=(float)nOrients/(full?2*PI:PI); const int oMax=nOrients*nb;
   const __m128 _norm=SET(norm), _oMult=SET(oMult), _nbf=SET((float)nb);
   const __m128i _oMax=SET(oMax), _nb=SET(nb);
-  // perform the majority of the work with sse执行sse的主要工作
+  // perform the majority of the work with sse
   _O0=(__m128i*) O0; _O1=(__m128i*) O1; _M0=(__m128*) M0; _M1=(__m128*) M1;
   if( interpolate ) for( i=0; i<=n-4; i+=4 ) {
     _o=MUL(LDu(O[i]),_oMult); _o0=CVT(_o); _od=SUB(_o,CVT(_o0));
@@ -139,11 +212,22 @@ void gradQuantize( float *O, float *M, int *O0, int *O1, float *M0, float *M1,
     _o1=ADD(_o0,_nb); _o1=AND(CMPGT(_oMax,_o1),_o1); *_O1++=_o1;
     _m=MUL(LDu(M[i]),_norm); *_M1=MUL(_od,_m); *_M0++=SUB(_m,*_M1); _M1++;
   } else for( i=0; i<=n-4; i+=4 ) {
-    _o=MUL(LDu(O[i]),_oMult); _o0=CVT(ADD(_o,SET(.5f)));
+    /*_o=MUL(LDu(O[i]),_oMult); _o0=CVT(ADD(_o,SET(.5f)));
     _o0=CVT(MUL(CVT(_o0),_nbf)); _o0=AND(CMPGT(_oMax,_o0),_o0); *_O0++=_o0;
-    *_M0++=MUL(LDu(M[i]),_norm); *_M1++=SET(0.f); *_O1++=SET(0);
+    *_M0++=MUL(LDu(M[i]),_norm); *_M1++=SET(0.f); *_O1++=SET(0);*/
+	
+	//调试用
+	  _o=MUL(LDu(O[i]),_oMult); 
+	  _o0=CVT(ADD(_o,SET(.5f)));
+	  _o0=CVT(MUL(CVT(_o0),_nbf));
+	  _o0=AND(CMPGT(_oMax,_o0),_o0);
+	  *_O0++=_o0;
+	  *_M0++=MUL(LDu(M[i]),_norm);
+	  *_M1++=SET(0.f); 
+	  *_O1++=SET(0);
+
   }
-  // compute trailing locations without sse不使用sse来计算跟踪位置
+  // compute trailing locations without sse
   if( interpolate ) for(; i<n; i++ ) {
     o=O[i]*oMult; o0=(int) o; od=o-o0;
     o0*=nb; if(o0>=oMax) o0=0; O0[i]=o0;
@@ -156,7 +240,7 @@ void gradQuantize( float *O, float *M, int *O0, int *O1, float *M0, float *M1,
   }
 }
 
-// compute nOrients gradient histograms per bin x bin block of pixels每bin x bin 像素块计算9个梯度直方图
+// compute nOrients gradient histograms per bin x bin block of pixels
 void gradHist( float *M, float *O, float *H, int h, int w,
   int bin, int nOrients, int softBin, bool full )
 {
@@ -167,7 +251,7 @@ void gradHist( float *M, float *O, float *H, int h, int w,
   O1=(int*)alMalloc(h*sizeof(int),16); M1=(float*) alMalloc(h*sizeof(float),16);
   // main loop
   for( x=0; x<w0; x++ ) {
-    // compute target orientation bins for entire column - very fast计算目标整列的方向二进制数
+    // compute target orientation bins for entire column - very fast
     gradQuantize(O+x*h,M+x*h,O0,O1,M0,M1,nb,h0,sInv2,nOrients,full,softBin>=0);
 
     if( softBin<0 && softBin%2==0 ) {
@@ -212,8 +296,21 @@ void gradHist( float *M, float *O, float *H, int h, int w,
       // main rows, has top and bottom bins, use SSE for minor speedup
       if( softBin<0 ) for( ; ; y++ ) {
         yb0 = (int) yb; if(yb0>=hb-1) break; GHinit; _m0=SET(M0[y]);
-        if(hasLf) { _m=SET(0,0,ms[1],ms[0]); GH(H0+O0[y],_m,_m0); }
-        if(hasRt) { _m=SET(0,0,ms[3],ms[2]); GH(H0+O0[y]+hb,_m,_m0); }
+        //if(hasLf) { _m=SET(0,0,ms[1],ms[0]); GH(H0+O0[y],_m,_m0); }
+		//if(hasRt) { _m=SET(0,0,ms[3],ms[2]); GH(H0+O0[y]+hb,_m,_m0); }
+		//调试用
+		if (hasLf) {
+			_m = SET(0, 0, ms[1], ms[0]);
+			H1 = H0 + O0[y];
+			STRu(*H1, ADD(LDu(*H1), MUL(_m, _m0)));
+		}
+		//调试用
+		if (hasRt) {
+			_m = SET(0, 0, ms[3], ms[2]);
+			H1 = H0 + O0[y]+hb;
+			STRu(*H1, ADD(LDu(*H1), MUL(_m, _m0)));
+		}
+
       } else for( ; ; y++ ) {
         yb0 = (int) yb; if(yb0>=hb-1) break; GHinit;
         _m0=SET(M0[y]); _m1=SET(M1[y]);
@@ -291,137 +388,137 @@ void hogChannels( float *H, const float *R, const float *N,
   #undef GETT
 }
 
-// compute HOG features计算fog特征
-void hog( float *M, float *O, float *H, int h, int w, int binSize,
+// compute HOG features
+/*void hog( float *M, float *O, float *H, int h, int w, int binSize,
   int nOrients, int softBin, bool full, float clip )
 {
   float *N, *R; const int hb=h/binSize, wb=w/binSize, nb=hb*wb;
-  // compute unnormalized gradient histograms计算非标准梯度直方图
+  // compute unnormalized gradient histograms
   R = (float*) wrCalloc(wb*hb*nOrients,sizeof(float));
   gradHist( M, O, R, h, w, binSize, nOrients, softBin, full );
-  // compute block normalization values计算块标准化值
+  // compute block normalization values
   N = hogNormMatrix( R, nOrients, hb, wb, binSize );
-  // perform four normalizations per spatial block每个空间块执行四规范化
+  // perform four normalizations per spatial block
   hogChannels( H, R, N, hb, wb, nOrients, clip, 0 );
   wrFree(N); wrFree(R);
-}
+}*/
 
-// compute FHOG features计算fhog特征
+// compute FHOG features
 void fhog( float *M, float *O, float *H, int h, int w, int binSize,
   int nOrients, int softBin, float clip )
 {
   const int hb=h/binSize, wb=w/binSize, nb=hb*wb, nbo=nb*nOrients;
   float *N, *R1, *R2; int o, x;
-  // compute unnormalized constrast sensitive histograms计算非标准相对方向敏感的直方图
+  // compute unnormalized constrast sensitive histograms
   R1 = (float*) wrCalloc(wb*hb*nOrients*2,sizeof(float));
   gradHist( M, O, R1, h, w, binSize, nOrients*2, softBin, true );
-  // compute unnormalized contrast insensitive histograms计算非标准相对方向不敏感的直方图
+  // compute unnormalized contrast insensitive histograms
   R2 = (float*) wrCalloc(wb*hb*nOrients,sizeof(float));
   for( o=0; o<nOrients; o++ ) for( x=0; x<nb; x++ )
     R2[o*nb+x] = R1[o*nb+x]+R1[(o+nOrients)*nb+x];
-  // compute block normalization values计算块标准化值
+  // compute block normalization values
   N = hogNormMatrix( R2, nOrients, hb, wb, binSize );
-  // normalized histograms and texture channels归一化直方图和结构通道
+  // normalized histograms and texture channels
   hogChannels( H+nbo*0, R1, N, hb, wb, nOrients*2, clip, 1 );
   hogChannels( H+nbo*2, R2, N, hb, wb, nOrients*1, clip, 1 );
   hogChannels( H+nbo*3, R1, N, hb, wb, nOrients*2, clip, 2 );
-  wrFree(N); mxFree(R1); wrFree(R2);
+  wrFree(N); wrFree(R1); wrFree(R2);
 }
 
-///******************************************************************************/
-//#ifdef MATLAB_MEX_FILE
-//// Create [hxwxd] mxArray array, initialize to 0 if c=true
-//mxArray* mxCreateMatrix3( int h, int w, int d, mxClassID id, bool c, void **I ){
-//  const int dims[3]={h,w,d}, n=h*w*d; int b; mxArray* M;
-//  if( id==mxINT32_CLASS ) b=sizeof(int);
-//  else if( id==mxDOUBLE_CLASS ) b=sizeof(double);
-//  else if( id==mxSINGLE_CLASS ) b=sizeof(float);
-//  else mexErrMsgTxt("Unknown mxClassID.");
-//  *I = c ? mxCalloc(n,b) : mxMalloc(n*b);
-//  M = mxCreateNumericMatrix(0,0,id,mxREAL);
-//  mxSetData(M,*I); mxSetDimensions(M,dims,3); return M;
-//}
-//
-//// Check inputs and outputs to mex, retrieve first input I
-//void checkArgs( int nl, mxArray *pl[], int nr, const mxArray *pr[], int nl0,
-//  int nl1, int nr0, int nr1, int *h, int *w, int *d, mxClassID id, void **I )
-//{
-//  const int *dims; int nDims;
-//  if( nl<nl0 || nl>nl1 ) mexErrMsgTxt("Incorrect number of outputs.");
-//  if( nr<nr0 || nr>nr1 ) mexErrMsgTxt("Incorrect number of inputs.");
-//  nDims = mxGetNumberOfDimensions(pr[0]); dims = mxGetDimensions(pr[0]);
-//  *h=dims[0]; *w=dims[1]; *d=(nDims==2) ? 1 : dims[2]; *I = mxGetPr(pr[0]);
-//  if( nDims!=2 && nDims!=3 ) mexErrMsgTxt("I must be a 2D or 3D array.");
-//  if( mxGetClassID(pr[0])!=id ) mexErrMsgTxt("I has incorrect type.");
-//}
-//
-//// [Gx,Gy] = grad2(I) - see gradient2.m
-//void mGrad2( int nl, mxArray *pl[], int nr, const mxArray *pr[] ) {
-//  int h, w, d; float *I, *Gx, *Gy;
-//  checkArgs(nl,pl,nr,pr,1,2,1,1,&h,&w,&d,mxSINGLE_CLASS,(void**)&I);
-//  if(h<2 || w<2) mexErrMsgTxt("I must be at least 2x2.");
-//  pl[0]= mxCreateMatrix3( h, w, d, mxSINGLE_CLASS, 0, (void**) &Gx );
-//  pl[1]= mxCreateMatrix3( h, w, d, mxSINGLE_CLASS, 0, (void**) &Gy );
-//  grad2( I, Gx, Gy, h, w, d );
-//}
-//
-//// [M,O] = gradMag( I, channel, full ) - see gradientMag.m
-//void mGradMag( int nl, mxArray *pl[], int nr, const mxArray *pr[] ) {
-//  int h, w, d, c, full; float *I, *M, *O=0;
-//  checkArgs(nl,pl,nr,pr,1,2,3,3,&h,&w,&d,mxSINGLE_CLASS,(void**)&I);
-//  if(h<2 || w<2) mexErrMsgTxt("I must be at least 2x2.");
-//  c = (int) mxGetScalar(pr[1]); full = (int) mxGetScalar(pr[2]);
-//  if( c>0 && c<=d ) { I += h*w*(c-1); d=1; }
-//  pl[0] = mxCreateMatrix3(h,w,1,mxSINGLE_CLASS,0,(void**)&M);
-//  if(nl>=2) pl[1] = mxCreateMatrix3(h,w,1,mxSINGLE_CLASS,0,(void**)&O);
-//  gradMag(I, M, O, h, w, d, full>0 );
-//}
-//
-//// gradMagNorm( M, S, norm ) - operates on M - see gradientMag.m
-//void mGradMagNorm( int nl, mxArray *pl[], int nr, const mxArray *pr[] ) {
-//  int h, w, d; float *M, *S, norm;
-//  checkArgs(nl,pl,nr,pr,0,0,3,3,&h,&w,&d,mxSINGLE_CLASS,(void**)&M);
-//  if( mxGetM(pr[1])!=h || mxGetN(pr[1])!=w || d!=1 ||
-//    mxGetClassID(pr[1])!=mxSINGLE_CLASS ) mexErrMsgTxt("M or S is bad.");
-//  S = (float*) mxGetPr(pr[1]); norm = (float) mxGetScalar(pr[2]);
-//  gradMagNorm(M,S,h,w,norm);
-//}
-//
-//// H=gradHist(M,O,[...]) - see gradientHist.m
-//void mGradHist( int nl, mxArray *pl[], int nr, const mxArray *pr[] ) {
-//  int h, w, d, hb, wb, nChns, binSize, nOrients, softBin, useHog;
-//  bool full; float *M, *O, *H, clipHog;
-//  checkArgs(nl,pl,nr,pr,1,3,2,8,&h,&w,&d,mxSINGLE_CLASS,(void**)&M);
-//  O = (float*) mxGetPr(pr[1]);
-//  if( mxGetM(pr[1])!=h || mxGetN(pr[1])!=w || d!=1 ||
-//    mxGetClassID(pr[1])!=mxSINGLE_CLASS ) mexErrMsgTxt("M or O is bad.");
-//  binSize  = (nr>=3) ? (int)   mxGetScalar(pr[2])    : 8;
-//  nOrients = (nr>=4) ? (int)   mxGetScalar(pr[3])    : 9;
-//  softBin  = (nr>=5) ? (int)   mxGetScalar(pr[4])    : 1;
-//  useHog   = (nr>=6) ? (int)   mxGetScalar(pr[5])    : 0;
-//  clipHog  = (nr>=7) ? (float) mxGetScalar(pr[6])    : 0.2f;
-//  full     = (nr>=8) ? (bool) (mxGetScalar(pr[7])>0) : false;
-//  hb = h/binSize; wb = w/binSize;
-//  nChns = useHog== 0 ? nOrients : (useHog==1 ? nOrients*4 : nOrients*3+5);
-//  pl[0] = mxCreateMatrix3(hb,wb,nChns,mxSINGLE_CLASS,1,(void**)&H);
-//  if( nOrients==0 ) return;
-//  if( useHog==0 ) {
-//    gradHist( M, O, H, h, w, binSize, nOrients, softBin, full );
-//  } else if(useHog==1) {
-//    hog( M, O, H, h, w, binSize, nOrients, softBin, full, clipHog );
-//  } else {
-//    fhog( M, O, H, h, w, binSize, nOrients, softBin, clipHog );
-//  }
-//}
-//
-//// inteface to various gradient functions (see corresponding Matlab functions)
-//void mexFunction( int nl, mxArray *pl[], int nr, const mxArray *pr[] ) {
-//  int f; char action[1024]; f=mxGetString(pr[0],action,1024); nr--; pr++;
-//  if(f) mexErrMsgTxt("Failed to get action.");
-//  else if(!strcmp(action,"gradient2")) mGrad2(nl,pl,nr,pr);
-//  else if(!strcmp(action,"gradientMag")) mGradMag(nl,pl,nr,pr);
-//  else if(!strcmp(action,"gradientMagNorm")) mGradMagNorm(nl,pl,nr,pr);
-//  else if(!strcmp(action,"gradientHist")) mGradHist(nl,pl,nr,pr);
-//  else mexErrMsgTxt("Invalid action.");
-//}
-//#endif
+/******************************************************************************/
+#ifdef MATLAB_MEX_FILE
+// Create [hxwxd] mxArray array, initialize to 0 if c=true
+mxArray* mxCreateMatrix3( int h, int w, int d, mxClassID id, bool c, void **I ){
+  const int dims[3]={h,w,d}, n=h*w*d; int b; mxArray* M;
+  if( id==mxINT32_CLASS ) b=sizeof(int);
+  else if( id==mxDOUBLE_CLASS ) b=sizeof(double);
+  else if( id==mxSINGLE_CLASS ) b=sizeof(float);
+  else mexErrMsgTxt("Unknown mxClassID.");
+  *I = c ? mxCalloc(n,b) : mxMalloc(n*b);
+  M = mxCreateNumericMatrix(0,0,id,mxREAL);
+  mxSetData(M,*I); mxSetDimensions(M,dims,3); return M;
+}
+
+// Check inputs and outputs to mex, retrieve first input I
+void checkArgs( int nl, mxArray *pl[], int nr, const mxArray *pr[], int nl0,
+  int nl1, int nr0, int nr1, int *h, int *w, int *d, mxClassID id, void **I )
+{
+  const int *dims; int nDims;
+  if( nl<nl0 || nl>nl1 ) mexErrMsgTxt("Incorrect number of outputs.");
+  if( nr<nr0 || nr>nr1 ) mexErrMsgTxt("Incorrect number of inputs.");
+  nDims = mxGetNumberOfDimensions(pr[0]); dims = mxGetDimensions(pr[0]);
+  *h=dims[0]; *w=dims[1]; *d=(nDims==2) ? 1 : dims[2]; *I = mxGetPr(pr[0]);
+  if( nDims!=2 && nDims!=3 ) mexErrMsgTxt("I must be a 2D or 3D array.");
+  if( mxGetClassID(pr[0])!=id ) mexErrMsgTxt("I has incorrect type.");
+}
+
+// [Gx,Gy] = grad2(I) - see gradient2.m
+void mGrad2( int nl, mxArray *pl[], int nr, const mxArray *pr[] ) {
+  int h, w, d; float *I, *Gx, *Gy;
+  checkArgs(nl,pl,nr,pr,1,2,1,1,&h,&w,&d,mxSINGLE_CLASS,(void**)&I);
+  if(h<2 || w<2) mexErrMsgTxt("I must be at least 2x2.");
+  pl[0]= mxCreateMatrix3( h, w, d, mxSINGLE_CLASS, 0, (void**) &Gx );
+  pl[1]= mxCreateMatrix3( h, w, d, mxSINGLE_CLASS, 0, (void**) &Gy );
+  grad2( I, Gx, Gy, h, w, d );
+}
+
+// [M,O] = gradMag( I, channel, full ) - see gradientMag.m
+void mGradMag( int nl, mxArray *pl[], int nr, const mxArray *pr[] ) {
+  int h, w, d, c, full; float *I, *M, *O=0;
+  checkArgs(nl,pl,nr,pr,1,2,3,3,&h,&w,&d,mxSINGLE_CLASS,(void**)&I);
+  if(h<2 || w<2) mexErrMsgTxt("I must be at least 2x2.");
+  c = (int) mxGetScalar(pr[1]); full = (int) mxGetScalar(pr[2]);
+  if( c>0 && c<=d ) { I += h*w*(c-1); d=1; }
+  pl[0] = mxCreateMatrix3(h,w,1,mxSINGLE_CLASS,0,(void**)&M);
+  if(nl>=2) pl[1] = mxCreateMatrix3(h,w,1,mxSINGLE_CLASS,0,(void**)&O);
+  gradMag(I, M, O, h, w, d, full>0 );
+}
+
+// gradMagNorm( M, S, norm ) - operates on M - see gradientMag.m
+void mGradMagNorm( int nl, mxArray *pl[], int nr, const mxArray *pr[] ) {
+  int h, w, d; float *M, *S, norm;
+  checkArgs(nl,pl,nr,pr,0,0,3,3,&h,&w,&d,mxSINGLE_CLASS,(void**)&M);
+  if( mxGetM(pr[1])!=h || mxGetN(pr[1])!=w || d!=1 ||
+    mxGetClassID(pr[1])!=mxSINGLE_CLASS ) mexErrMsgTxt("M or S is bad.");
+  S = (float*) mxGetPr(pr[1]); norm = (float) mxGetScalar(pr[2]);
+  gradMagNorm(M,S,h,w,norm);
+}
+
+// H=gradHist(M,O,[...]) - see gradientHist.m
+void mGradHist( int nl, mxArray *pl[], int nr, const mxArray *pr[] ) {
+  int h, w, d, hb, wb, nChns, binSize, nOrients, softBin, useHog;
+  bool full; float *M, *O, *H, clipHog;
+  checkArgs(nl,pl,nr,pr,1,3,2,8,&h,&w,&d,mxSINGLE_CLASS,(void**)&M);
+  O = (float*) mxGetPr(pr[1]);
+  if( mxGetM(pr[1])!=h || mxGetN(pr[1])!=w || d!=1 ||
+    mxGetClassID(pr[1])!=mxSINGLE_CLASS ) mexErrMsgTxt("M or O is bad.");
+  binSize  = (nr>=3) ? (int)   mxGetScalar(pr[2])    : 8;
+  nOrients = (nr>=4) ? (int)   mxGetScalar(pr[3])    : 9;
+  softBin  = (nr>=5) ? (int)   mxGetScalar(pr[4])    : 1;
+  useHog   = (nr>=6) ? (int)   mxGetScalar(pr[5])    : 0;
+  clipHog  = (nr>=7) ? (float) mxGetScalar(pr[6])    : 0.2f;
+  full     = (nr>=8) ? (bool) (mxGetScalar(pr[7])>0) : false;
+  hb = h/binSize; wb = w/binSize;
+  nChns = useHog== 0 ? nOrients : (useHog==1 ? nOrients*4 : nOrients*3+5);
+  pl[0] = mxCreateMatrix3(hb,wb,nChns,mxSINGLE_CLASS,1,(void**)&H);
+  if( nOrients==0 ) return;
+  if( useHog==0 ) {
+    gradHist( M, O, H, h, w, binSize, nOrients, softBin, full );
+  } else if(useHog==1) {
+    hog( M, O, H, h, w, binSize, nOrients, softBin, full, clipHog );
+  } else {
+    fhog( M, O, H, h, w, binSize, nOrients, softBin, clipHog );
+  }
+}
+
+// inteface to various gradient functions (see corresponding Matlab functions)
+void mexFunction( int nl, mxArray *pl[], int nr, const mxArray *pr[] ) {
+  int f; char action[1024]; f=mxGetString(pr[0],action,1024); nr--; pr++;
+  if(f) mexErrMsgTxt("Failed to get action.");
+  else if(!strcmp(action,"gradient2")) mGrad2(nl,pl,nr,pr);
+  else if(!strcmp(action,"gradientMag")) mGradMag(nl,pl,nr,pr);
+  else if(!strcmp(action,"gradientMagNorm")) mGradMagNorm(nl,pl,nr,pr);
+  else if(!strcmp(action,"gradientHist")) mGradHist(nl,pl,nr,pr);
+  else mexErrMsgTxt("Invalid action.");
+}
+#endif

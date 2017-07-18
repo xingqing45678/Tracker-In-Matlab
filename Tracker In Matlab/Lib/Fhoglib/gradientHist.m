@@ -2,12 +2,12 @@
 function R = gradientHist(M,O,h,w,binSize,nOrients,softBin,full)
 %gradientHist(M, O, h, w, binSize, nOrients * 2, softBin, true);
     hb = floor(h/binSize);wb = floor(w/binSize);nb = hb*wb;w0 = wb*binSize;h0 = hb*binSize;
-    sInv = 1/binSize;sInv2 = 1/binSize/binSize;R = zeros(1,wb*hb*nOrients);
+    sInv = 1/binSize;sInv2 = 1/binSize/binSize;R = zeros(1,wb*hb*nOrients*3/2);
     for x=1:w0
         [M0,M1,O0,O1] = gradQuantize(M,O,x,h,nb,h0,sInv2,nOrients,full,softBin>=0);%量化O和M
         if softBin==-1  %%表明softBin为奇数采用三线性插值           
             %出错，原因是c语言版本下标从0开始到216，而matlab下标从1开始，故会超界。
-                if x==1 ,init=0.5*sInv-0.5-sInv;xb=init;end%此处有改动：init=-0.5*sInv;%源：0.5*sInv-0.5
+                if x==1 ,init=0.5*sInv-0.5;xb=init;end%此处有改动：init=-0.5*sInv;%源：0.5*sInv-0.5
                 if xb>=0,hasLf=1;else hasLf=0;end
                 if hasLf,xb0=floor(xb);else xb0=-1;end
                 if xb0<wb-1,hasRt=1;else hasRt=0;end
@@ -29,7 +29,7 @@ function R = gradientHist(M,O,h,w,binSize,nOrients,softBin,full)
                         R(current+O1(y)+hb+1)=R(current+O1(y)+hb+1)+ms(4)*M1(y);
                     end
                 end
-                
+                y=y+1;
                 %main rows,has top and bottom bins
                     while(1)
                         yb0=floor(yb);
@@ -38,24 +38,24 @@ function R = gradientHist(M,O,h,w,binSize,nOrients,softBin,full)
                         try
                             if hasLf %源程序中sse加速是四位相乘，结果存入当前位置，未使用sse加速的考虑了后三个点情况
                                 current=base+O0(y)+1;
-                                if current>=213
-                                    current=213;
-                                end
-                                R(current)=R(current)+0*M0(y);
-                                R(current+1)=R(current+1)+0*M0(y);
-                                R(current+2)=R(current+2)+ms(2)*M0(y);
-                                R(current+3)=R(current+3)+ms(1)*M0(y);%out of range
+%                                 if current>=213
+%                                     current=213;
+%                                 end
+                                R(current)=R(current)+ms(1)*M0(y);
+                                R(current+1)=R(current+1)+ms(2)*M0(y);
+                                R(current+2)=R(current+2)+0*M0(y);
+                                R(current+3)=R(current+3)+0*M0(y);%out of range
     %                             current=base+O0(y);R(current)=R(current)+0*M0(y)+0*M0(y)+ms(2)*M0(y)+ms(1)*M0(y);%by qw
                             end
                             if hasRt
                                 current=base+O0(y)+hb+1;
-                                if current>213
-                                    current=213;
-                                end
-                                R(current)=R(current)+0*M0(y);
-                                R(current+1)=R(current+1)+0*M0(y);
-                                R(current+2)=R(current+2)+ms(4)*M0(y);
-                                R(current+3)=R(current+3)+ms(3)*M0(y);
+%                                 if current>213
+%                                     current=213;
+%                                 end
+                                R(current)=R(current)+ms(3)*M0(y);
+                                R(current+1)=R(current+1)+ms(4)*M0(y);
+                                R(current+2)=R(current+2)+0*M0(y);
+                                R(current+3)=R(current+3)+0*M0(y);
     %                             current=base+O0(y)+hb;R(current)=R(current)+0*M0(y)+0*M0(y)+ms(4)*M0(y)+ms(3)*M0(y);%by qw
                             end
                         catch
