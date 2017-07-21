@@ -1,0 +1,3 @@
+LIBRARY		"gradientQW"
+EXPORTS		
+		mexFunction
