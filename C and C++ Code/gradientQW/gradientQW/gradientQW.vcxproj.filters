@@ -15,11 +15,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <None Include="makemex.def">
-      <Filter>源文件</Filter>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="gradientQW.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -28,5 +23,10 @@
     <ClInclude Include="wrappers.hpp">
       <Filter>头文件</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="makemex.def">
+      <Filter>源文件</Filter>
+    </None>
   </ItemGroup>
 </Project>

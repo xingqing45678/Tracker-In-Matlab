@@ -6,10 +6,10 @@ close all;clearvars;clc;
 % Add paths
 setup_paths();
 
-startframe = 370;         %  起始帧
+startframe = 1;         %  起始帧
 choose     = 'fhog';    %  'fhog'--普通特征       'cnn'--深度学习特征
-orign_file = 1;         %  '1 '--源文件为视频     '0 '--源文件为图片  
-sub_flag   = 1;         %  '1 '--取分割中心图像   '0 '--不分割图像
+orign_file = 0;         %  '1 '--源文件为视频     '0 '--源文件为图片  
+sub_flag   = 0;         %  '1 '--取分割中心图像   '0 '--不分割图像
 
 %% 读取视频文件
 if orign_file==1
@@ -17,7 +17,7 @@ if orign_file==1
     [seq] = load_video_info_qw(video_path,startframe,sub_flag);%视频
 else
 %% 读取图片文件
-    video_path = 'F:\testwot\59huangmo_2';%图片
+    video_path = 'D:\ImageData\VOT2016\graduate';%图片
     [seq] = load_video_info_qw_picture(video_path,startframe);%读图片，用读取groundtruth文件来获取初始定位
 end
 %% Run ECO

@@ -1,7 +1,7 @@
 function [img_out] = get_subimg(im,pos,sub_flag)
     %截取图像为以pos为中心out_w*out_h大小的子图
     if sub_flag==1
-        out_w = 1080;out_h = 720;[w,h,~] = size(im);
+        out_w = 720;out_h = 576;[w,h,~] = size(im);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         if out_w>w  || out_h>h
             error('size of input image is too small');
